@@ -57,11 +57,73 @@ architecture RTL of smart_parking is
     signal test : integer := 0;
     signal one_bit : std_logic;
     type database is array(0 to 100) of integer range 11111 to 100000;
-    signal plate_array, plate_array_temp, location_array, location_array_temp: database := (others => 100000);
+    signal plate_array, location_array: database := (others => 100000);
+
+    signal i_sig: integer;
+    signal mid_sig : integer;
+    signal what : integer;
 
 begin
 
     one_bit <= command(0);
+
+    binary_search_process : process( ready )
+    variable found: boolean := FALSE;
+    variable array_start: integer := 1;
+    variable array_end: integer := 100;
+    
+    begin
+        if rising_edge(ready) then
+            for i in 0 to 8 loop
+                if not found then
+                
+                    i_sig <= i;
+                    mid_sig <= (array_start + array_end) / 2;
+                    what <= plate_array((array_start + array_end) / 2);
+
+                    if plate_array((array_start + array_end) / 2) = digits then
+                        if (location_array((array_start + array_end) / 2) < 25) then
+                            floor1_hallway <= '1';
+                            floor1_right <= '1';
+                            floor1_left <= '0';
+                            floor2_hallway <= '0';
+                            floor2_right <= '0';
+                            floor2_left <= '0';
+                        elsif (location_array((array_start + array_end) / 2) < 50) then
+                            floor1_hallway <= '1';
+                            floor1_right <= '0';
+                            floor1_left <= '1';
+                            floor2_hallway <= '0';
+                            floor2_right <= '0';
+                            floor2_left <= '0';
+                        elsif (location_array((array_start + array_end) / 2) < 75) then
+                            floor1_hallway <= '1';
+                            floor1_right <= '0';
+                            floor1_left <= '0';
+                            floor2_hallway <= '1';
+                            floor2_right <= '1';
+                            floor2_left <= '0';
+                        else
+                            floor1_hallway <= '1';
+                            floor1_right <= '0';
+                            floor1_left <= '0';
+                            floor2_hallway <= '1';
+                            floor2_right <= '0';
+                            floor2_left <= '1';
+                        end if;
+                        found := TRUE;
+                    elsif plate_array((array_start + array_end) / 2) < digits then
+                        array_start := (array_start + array_end) / 2;
+                    elsif plate_array((array_start + array_end) / 2) > digits then
+                        array_end := (array_start + array_end) / 2;
+                    end if ;
+                end if ;            
+            end loop ;    
+        end if ;
+        array_start := 1;
+        array_end := 100;
+    end process ; -- binary_search_process
+
     add_state_process : process( one_bit , clk)
     variable digit_ascii1: integer := 48;
     variable digit_ascii2: integer := 57;
@@ -69,6 +131,8 @@ begin
     variable star: integer := 42;
     variable ascii_converted : integer;
     variable is_placed : boolean := false;
+    variable plate_array_temp, location_array_temp: database := (others => 100000);
+    
     begin
         ascii_converted := to_integer(unsigned(command(8 downto 1)));
         test <= ascii_converted;
@@ -146,15 +210,15 @@ begin
                     for i in 0 to 100 loop
                         if i /= 0 then
                             if plate_input > plate_array(i) then
-                                plate_array_temp(i) <= plate_array(i);
-                                location_array_temp(i) <= location_array(i);
+                                plate_array_temp(i) := plate_array(i);
+                                location_array_temp(i) := location_array(i);
                             elsif plate_input < plate_array(i) and not is_placed then
-                                plate_array_temp(i) <= plate_input;
-                                location_array_temp(i) <= location_input;
+                                plate_array_temp(i) := plate_input;
+                                location_array_temp(i) := location_input;
                                 is_placed := true;
                             else
-                                location_array_temp(i) <= location_array(i-1);
-                                plate_array_temp(i) <= plate_array(i-1);    
+                                location_array_temp(i) := location_array(i-1);
+                                plate_array_temp(i) := plate_array(i-1);    
                             end if;
                         end if;
                     end loop;
@@ -163,6 +227,7 @@ begin
                         location_array(i) <= location_array_temp(i);
                         plate_array(i) <= plate_array_temp(i);
                     end loop ; -- temp_to_array
+
                     is_placed := false;
                     free_space <= free_space - 1;
                     add_state <= START;

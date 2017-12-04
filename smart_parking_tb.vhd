@@ -43,7 +43,7 @@ ARCHITECTURE behavior OF smart_parking_tb IS
     PORT(
          clk : IN  std_logic;
          ready : IN  std_logic;
-         digits : IN  std_logic_vector(0 to 16);
+         digits : IN  integer range 11111 to 99999;
          command : IN  std_logic_vector(31 downto 0);
          floor1_hallway : OUT  std_logic;
          floor1_right : OUT  std_logic;
@@ -58,7 +58,7 @@ ARCHITECTURE behavior OF smart_parking_tb IS
    --Inputs
    signal clk : std_logic := '0';
    signal ready : std_logic := '0';
-   signal digits : std_logic_vector(0 to 16) := (others => '0');
+   signal digits : integer range 11111 to 99999 := 11111;
    signal command : std_logic_vector(31 downto 0) := (others => '0');
 
  	--Outputs
@@ -98,6 +98,7 @@ BEGIN
    end process;
  
 
+    
    -- Stimulus process
    stim_proc: process
    begin		
@@ -187,6 +188,11 @@ BEGIN
         command <= "00000000000000000000000001000110";
         -- sharp added
 
+        digits <= 22222;
+        ready <= '1';
+        wait for clk_period;
+        ready <= '0';
+        
       -- insert stimulus here 
 
       wait;
