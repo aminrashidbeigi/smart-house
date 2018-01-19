@@ -54,7 +54,7 @@ ARCHITECTURE behavior OF security_system_tb IS
    signal clk, door, window : std_logic := '0';
    signal command : std_logic_vector(31 downto 0) := (others => '0');
 
- 	--Outputs
+  --Outputs
    signal alarm : std_logic;
    
    -- Clock period definitions
@@ -62,7 +62,7 @@ ARCHITECTURE behavior OF security_system_tb IS
  
 BEGIN
  
-	-- Instantiate the Unit Under Test (UUT)
+  -- Instantiate the Unit Under Test (UUT)
    uut: security_system PORT MAP (
           clk => clk,
           door => door,
@@ -74,101 +74,99 @@ BEGIN
    -- Clock process definitions
    clk_process :process
    begin
-		clk <= '0';
-		wait for clk_period/2;
-		clk <= '1';
-		wait for clk_period/2;
+    clk <= '0';
+    wait for clk_period/2;
+    clk <= '1';
+    wait for clk_period/2;
    end process;
  
 
     
    -- Stimulus process
    stim_proc: process
-   begin		
+   begin    
       -- hold reset state for 100 ns.
-        wait for 100 ns;	
+        wait for 100 ns;  
 
-        wait for clk_period*10;
+        wait for clk_period*2;
         
         command <= "00000000000000000000000000000000";
         
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001000111";
+        command <= "00000000000000000000000001000111"; --#
         
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001000110";
+        command <= "00000000000000000000000001010010"; --)
         
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001100101";
+        command <= "00000000000000000000000001010101"; -- *
         
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001000110";
+        command <= "00000000000000000000000001100010"; -- 1
 
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001100101";
+        command <= "00000000000000000000000001100101"; -- 2
         
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001000110";
+        command <= "00000000000000000000000001100110"; -- 3
           
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001100101";
+        command <= "00000000000000000000000001101001"; -- 4
         
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001000110";
+        command <= "00000000000000000000000001010100"; -- *
           
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001100101";
+        command <= "00000000000000000000000001101001"; -- 4
         
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001000110";
+        command <= "00000000000000000000000001100110"; -- 3
         
-        wait for clk_period*10;
+        wait for clk_period*2;
 
-        command <= "00000000000000000000000001100101";
+        command <= "00000000000000000000000001100101"; -- 2
         
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001000110";
-        -- 22222 inserted
-
+        command <= "00000000000000000000000001100010"; -- 1
           
-        wait for clk_period*10;
+        wait for clk_period*2;
         
-        command <= "00000000000000000000000001010101";
+        command <= "00000000000000000000000001000111"; -- #
+
+        --wait for clk_period*2;
         
-        wait for clk_period*10;
-        
-        command <= "00000000000000000000000001000110";
-        -- * added
+        --command <= "00000000000000000000000001000110";
+        ---- * added
 
           
-        wait for clk_period*10;
+        --wait for clk_period*2;
         
-        command <= "00000000000000000000000001100101";
+        --command <= "00000000000000000000000001100101";
         
-        wait for clk_period*10;
+        --wait for clk_period*2;
         
-        command <= "00000000000000000000000001000110";
-        -- 2 added
+        --command <= "00000000000000000000000001000110";
+        ---- 2 added
 
           
-        wait for clk_period*10;
+        --wait for clk_period*2;
         
-        command <= "00000000000000000000000001000111";
+        --command <= "00000000000000000000000001000111";
         
-        wait for clk_period*10;
+        --wait for clk_period*2;
         
-        command <= "00000000000000000000000001000110";
+        --command <= "00000000000000000000000001000110";
         -- sharp added
 
 
