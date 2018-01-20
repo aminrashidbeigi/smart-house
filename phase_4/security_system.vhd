@@ -226,6 +226,32 @@ begin
 							cur_state <= DISARMED;
 						end if;
 						
+					when ARMED =>
+						if window = '1' then
+							cur_state <= ALARM;
+						elsif door = '1' then
+							cur_state <= BEEP;
+						else
+							cur_state <= START;
+						end if ;
+					when ALARM =>
+						alarm <= '1';
+						cur_state <= ALARM;
+					when BEEP =>
+						alarm <= '1';
+						cur_state <= BCOUNTER;
+					when BCOUNTER =>
+						alarm <= '0';
+						password_checker <= TRUE;
+						door_counter <= door_counter + 1;
+						if door_counter = 5 or door_counter = 10 or door_counter = 15 or door_counter = 20 or door_counter = 25 then
+							cur_state <= BEEP;
+						elsif door_counter = 30 then
+							cur_state <= ALARM;
+						else
+							cur_state <= BCOUNTER;
+						end if ; 
+
 					when others =>
 						cur_state <= START;
 				end case;
@@ -233,5 +259,37 @@ begin
 			end if;
 	end process;
 
+
+	password_cheker_process : process( clk )
+	variable password_counter : integer := 0;
+	variable ascii_converted : integer;
+	variable password : integer := 0;
+	variable sharp : integer := 35;
+	begin
+		ascii_converted := to_integer(unsigned(command(8 downto 1)));
+		if rising_edge(clk) then
+			case( pass_state ) is
+			
+				when PASSWORD_CHECKER =>
+					if(one_bit_signal /= one_bit) then
+						if ascii_converted = sharp then
+							pass_state <= P1;
+						else
+							pass_state <= PASSWORD_CHECKER;	
+						end if ;
+					end if ;
+				when P1 =>
+					if(one_bit_signal /= one_bit) then
+						if ascii_converted /= sharp then
+							password :
+						else
+							pass_state <= PASSWORD_CHECKER;	
+						end if ;
+					end if ;
+				when others =>
+			
+			end case ;
+		password_counter := password_counter + 1;
+	end process ; -- password_cheker_process
 
 end Behavioral;
