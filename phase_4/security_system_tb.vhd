@@ -160,7 +160,6 @@ BEGIN
         
         command <= "00000000000000000000000001010100"; -- *
 
-          
         wait for clk_period*2;
         
         command <= "00000000000000000000000001100011"; -- 1
@@ -168,8 +167,86 @@ BEGIN
         wait for clk_period*2;
         
         command <= "00000000000000000000000001000110"; -- #
-        -- sharp added
 
+
+------------------------------------------- system armed
+
+
+        --wait for clk_period*2;
+        
+        --window <= '1';        
+
+        --wait for clk_period*2;
+        
+        --command <= "00000000000000000000000001000110"; -- #        
+
+        --wait for clk_period*2;
+        
+        --command <= "00000000000000000000000001000110"; -- #        
+-------------------------------------------------- window  = 1
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        
+        door <= '1';        
+
+        wait for clk_period*2;
+        
+        command <= "00000000000000000000000001000111"; -- #        
+
+        wait for clk_period*2;
+
+        command <= "00000000000000000000000001100010"; -- 1
+
+        wait for clk_period*2;
+        
+        command <= "00000000000000000000000001100101"; -- 2
+        
+        wait for clk_period*2;
+        
+        command <= "00000000000000000000000001100110"; -- 3
+          
+        wait for clk_period*2;
+        
+        command <= "00000000000000000000000001101001"; -- 4
+
+        wait for clk_period*2;
+
+        command <= "00000000000000000000000001000110"; -- #        
 
       wait;
    end process;

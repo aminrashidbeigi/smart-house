@@ -45,18 +45,23 @@ end security_system;
 architecture Behavioral of security_system is
     
     type STATE is (	START, ARMED, DISARMED, E1, E2, E3, E4, E5, E6, E7, E8, ARMING, 
-    				CREATE_USER, CHANGE_PASS);
+    				CREATE_USER, CHANGE_PASS, PASSWORD_CHECKER, P1, P2, BEEP, ALARMING,
+    				BCOUNTER);
   	type USERDB is array(0 to 3,0 to 50) of integer;
   	type PASSDB is array(0 to 3) of integer range 0 to 9999;
   	type ONE_DIM is array (0 to 50) of integer range -1 to 400;
   	signal username_db : USERDB := (others => (others => -1));
   	signal password_db : PASSDB := (1234, 0, 0, 0);
     signal cur_state : STATE := START;
+    signal pass_state : STATE := PASSWORD_CHECKER;
     signal armed_flag : std_logic := '0';
 	signal one_bit : std_logic := '0';
 	signal free : integer := 3;
 	signal one_bit_signal : std_logic := '1';
+	signal pass_started : boolean := false;
+	signal driver_solver : integer := 0;
 	signal temp : ONE_DIM;
+
 begin
 	
 	
@@ -73,7 +78,7 @@ begin
 	    variable user_valid : boolean := false;
 	    variable user_index : integer := 0;
 	    variable timer : integer := 0;
-	    
+	    variable door_counter : integer := 0;
 	begin
         ascii_converted := to_integer(unsigned(command(8 downto 1)));
 		if rising_edge(clk) then
@@ -93,16 +98,14 @@ begin
 						end if;
 
 					when DISARMED =>
-						for i in 0 to 50 loop
-							temp(i) <= username(i);
-						end loop;
+						pass_started <= false;
+						arg2 := 0;
+						arg3 := 0;
+						username := (others => -1);
+						username_index := 0;
+						user_index := 0;
+						timer := 0;
 						if(one_bit_signal /= one_bit) then
-							arg2 := 0;
-							arg3 := 0;
-							username := (others => -1);
-							username_index := 0;
-							user_index := 0;
-							timer := 0;
 							if ascii_converted = sharp then
 								cur_state <= E1;
 							else
@@ -227,30 +230,40 @@ begin
 						end if;
 						
 					when ARMED =>
+						alarm <= '0';
 						if window = '1' then
-							cur_state <= ALARM;
+							cur_state <= ALARMING;
 						elsif door = '1' then
 							cur_state <= BEEP;
 						else
 							cur_state <= START;
 						end if ;
-					when ALARM =>
+
+					when ALARMING =>
 						alarm <= '1';
-						cur_state <= ALARM;
+						cur_state <= ALARMING;
+
 					when BEEP =>
 						alarm <= '1';
 						cur_state <= BCOUNTER;
+						pass_started <= true;
+						
 					when BCOUNTER =>
 						alarm <= '0';
-						password_checker <= TRUE;
-						door_counter <= door_counter + 1;
-						if door_counter = 5 or door_counter = 10 or door_counter = 15 or door_counter = 20 or door_counter = 25 then
-							cur_state <= BEEP;
-						elsif door_counter = 30 then
-							cur_state <= ALARM;
-						else
-							cur_state <= BCOUNTER;
-						end if ; 
+						door_counter := door_counter + 1;
+						if driver_solver = 0 then
+							if door_counter = 5 or door_counter = 10 or door_counter = 15 or door_counter = 20 or door_counter = 25 then
+								cur_state <= BEEP;
+							elsif door_counter = 30 then
+								cur_state <= ALARMING;
+							else
+								cur_state <= BCOUNTER;
+							end if ; 
+						elsif driver_solver = 1 then
+							cur_state <= DISARMED;
+						else 
+							cur_state <= ALARMING;
+						end if;
 
 					when others =>
 						cur_state <= START;
@@ -265,31 +278,65 @@ begin
 	variable ascii_converted : integer;
 	variable password : integer := 0;
 	variable sharp : integer := 35;
+	variable pass_valid : boolean := false;
+	variable timer : integer := 0;
+	variable tries : integer := 0;
 	begin
 		ascii_converted := to_integer(unsigned(command(8 downto 1)));
-		if rising_edge(clk) then
+		if rising_edge(clk) and pass_started = true then
 			case( pass_state ) is
 			
 				when PASSWORD_CHECKER =>
 					if(one_bit_signal /= one_bit) then
 						if ascii_converted = sharp then
+							timer := 0;
 							pass_state <= P1;
 						else
 							pass_state <= PASSWORD_CHECKER;	
 						end if ;
 					end if ;
+
 				when P1 =>
 					if(one_bit_signal /= one_bit) then
 						if ascii_converted /= sharp then
-							password :
+							password := password * 10  + (ascii_converted - 48);
+							pass_state <= P1;
+							timer := 0;
 						else
-							pass_state <= PASSWORD_CHECKER;	
+							pass_state <= P2;	
 						end if ;
+					else
+						timer := timer + 1;
 					end if ;
+
+					if timer = 10 then
+						password := 0;
+						pass_state <= PASSWORD_CHECKER;
+					end if;
+
+				when P2 =>
+					pass_valid := false;
+					for i in 0 to 3 loop
+						if pass_valid = false and password_db(i) = password then
+							pass_valid := true;
+						end if;
+					end loop;
+
+					if pass_valid = true then
+						driver_solver <= 1;
+					elsif tries = 3 then
+						driver_solver <= 2;
+					else
+						tries := tries + 1;
+						pass_state <= PASSWORD_CHECKER;
+					end if; 
+
 				when others =>
-			
+					pass_state <= PASSWORD_CHECKER;
+
 			end case ;
-		password_counter := password_counter + 1;
+			password_counter := password_counter + 1;
+		end if;
 	end process ; -- password_cheker_process
 
 end Behavioral;
