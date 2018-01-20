@@ -94,11 +94,11 @@ BEGIN
         
         wait for clk_period*2;
         
-        command <= "00000000000000000000000001000111"; --#
+        command <= "00000000000000000000000001000111"; -- #
         
         wait for clk_period*2;
         
-        command <= "00000000000000000000000001010010"; --)
+        command <= "00000000000000000000000010000010"; -- A
         
         wait for clk_period*2;
         
@@ -144,29 +144,30 @@ BEGIN
         
         command <= "00000000000000000000000001000111"; -- #
 
-        --wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
+        wait for clk_period*2;
         
-        --command <= "00000000000000000000000001000110";
-        ---- * added
+        command <= "00000000000000000000000001000110"; -- #
 
           
-        --wait for clk_period*2;
+        wait for clk_period*2;
         
-        --command <= "00000000000000000000000001100101";
+        command <= "00000000000000000000000010000011"; -- A
         
-        --wait for clk_period*2;
+        wait for clk_period*2;
         
-        --command <= "00000000000000000000000001000110";
-        ---- 2 added
+        command <= "00000000000000000000000001010100"; -- *
 
           
-        --wait for clk_period*2;
+        wait for clk_period*2;
         
-        --command <= "00000000000000000000000001000111";
+        command <= "00000000000000000000000001100011"; -- 1
         
-        --wait for clk_period*2;
+        wait for clk_period*2;
         
-        --command <= "00000000000000000000000001000110";
+        command <= "00000000000000000000000001000110"; -- #
         -- sharp added
 
 
