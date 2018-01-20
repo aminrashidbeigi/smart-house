@@ -236,7 +236,7 @@ begin
 						elsif door = '1' then
 							cur_state <= BEEP;
 						else
-							cur_state <= START;
+							cur_state <= ARMED;
 						end if ;
 
 					when ALARMING =>
